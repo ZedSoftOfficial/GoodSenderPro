@@ -1,5 +1,5 @@
 # GoodSenderPro
-ٌGood Sender ZedSoftOfficial
+Good Sender ZedSoftOfficial
 
 Description (English)
 
@@ -129,5 +129,4 @@ pyinstaller --onefile --noconsole main.py
 
 دانلود نسخه اجرایی:
 
-دانلود از اینجا
 
