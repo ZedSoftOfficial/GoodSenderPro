@@ -8,9 +8,8 @@ try:
     from tkinter import filedialog
     GUI_ENABLED = True
 except ImportError:
-    GUI_ENABLED = False  # غیرفعال کردن GUI برای ویندوز 7
+    GUI_ENABLED = False  
 
-# تابع خواندن تنظیمات از فایل config.txt
 def read_config():
     config = {}
     if not os.path.exists("config.txt"):
@@ -36,18 +35,16 @@ def read_config():
 
     return config
 
-# تابع ارسال پیام به تلگرام
 def send_to_telegram(token, chat_id, message):
     try:
         url = f"https://api.telegram.org/bot{token}/sendMessage"
         payload = {'chat_id': chat_id, 'text': message, 'parse_mode': 'HTML'}
         response = requests.post(url, data=payload)
         response.raise_for_status()
-        print(f"\033[1;32m good was sent to your telegram\033[0m")  # تغییر پیام به "1 good was sent"
+        print(f"\033[1;32m good was sent to your telegram\033[0m") 
     except requests.exceptions.RequestException as e:
         print(f"\033[1;31mError sending message: {e}\033[0m")
 
-# تابع یافتن فایل‌های good.txt در مسیر موردنظر
 def find_good_files(directory):
     good_files = []
     for root, dirs, files in os.walk(directory):
@@ -56,7 +53,6 @@ def find_good_files(directory):
                 good_files.append(os.path.join(root, file))
     return good_files
 
-# تابع نمایش هدر
 def print_header():
     os.system('cls' if os.name == 'nt' else 'clear')
     print("\033[1;32mGood Sender ZedSoftOfficial\033[0m")  
@@ -64,7 +60,6 @@ def print_header():
     print("\033[1;34mT.me/ZedSoftOfficial\033[0m")  
     print("\n" + "="*50 + "\n")  
 
-# تابع انتخاب مسیر دایرکتوری (سازگار با ویندوز 7)
 def select_directory():
     if GUI_ENABLED:
         root = tk.Tk()
@@ -80,7 +75,6 @@ def select_directory():
             time.sleep(2)
             return None
 
-# تابع حذف فایل good.txt
 def delete_good_file(file_path):
     try:
         os.remove(file_path)
@@ -90,8 +84,8 @@ def delete_good_file(file_path):
 
 # تابع اصلی برنامه
 def main():
-    delete_mode = False  # پیش‌فرض False برای جلوگیری از خطا در گزینه‌های 1 و 2
-    sent_lines = set()  # برای جلوگیری از ارسال دوباره خطوط
+    delete_mode = False 
+    sent_lines = set()  
 
     while True:
         print_header()
@@ -106,7 +100,7 @@ def main():
         if choice == "1":
             config = read_config()
             if not config:
-                continue  # بازگشت به منو
+                continue  
             token = config["TOKEN"]
             chat_id = config["CHAT_ID"]
         elif choice == "2":
@@ -123,20 +117,18 @@ def main():
         else:
             print("\033[1;31mInvalid choice. Please try again.\033[0m")
             time.sleep(2)
-            continue  # بازگشت به منو
+            continue  
 
         print(f"\033[1;32mUsing Token: {token[:6]}...{token[-4:]}\033[0m")  
         print(f"\033[1;32mUsing Chat ID: {chat_id}\033[0m")
         
-        # پاکسازی کنسول بعد از وارد کردن اطلاعات توکن و ID
         os.system('cls' if os.name == 'nt' else 'clear')
 
-        # انتخاب مسیر دایرکتوری
         directory = select_directory()
         if not directory:
             print("\033[1;31mNo directory selected. Returning to menu...\033[0m")
             time.sleep(2)
-            continue  # بازگشت به منو
+            continue 
 
         print(f"\033[1;36mMonitoring for good.txt files in {directory}...\033[0m")  
 
@@ -150,16 +142,14 @@ def main():
                             line = line.strip()
                             if line and line not in sent_lines:
                                 send_to_telegram(token, chat_id, line)
-                                sent_lines.add(line)  # جلوگیری از ارسال دوباره
+                                sent_lines.add(line)  
 
-                    # حذف فایل پس از ارسال در گزینه 3
                     if delete_mode:
                         delete_good_file(file_path)
 
                 except Exception as e:
                     print(f"\033[1;31mError processing file {file_path}: {e}\033[0m")
 
-            # شمارش معکوس برای دور بعدی اسکن
             for remaining in range(60, 0, -1):
                 sys.stdout.write(f"\r\033[1;33mWaiting {remaining} seconds...\033[0m")  
                 sys.stdout.flush()
